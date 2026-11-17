@@ -1,25 +1,39 @@
 # json2latex-report
 
-把 **JSON 块列表**或**简易 Markdown** 一键转成可编译的 `.tex`，可选直接出 PDF——纯 Python 标准库，无需第三方依赖。
+把 **JSON 块列表**或**简易 Markdown** 一键转成可编译的 `.tex`，可选直接出 PDF——纯 Python 标准库，无第三方依赖。
 
-> **示例数据为虚构**
-> `demo.json`、`note.md` 中的产线名、工位名、作者、指标数值全部为虚构示例，不对应任何真实企业、产线或客户。
+> **示例数据为虚构**：`demo.json`、`note.md` 里的产线名、工位名、作者、指标均为虚构示例，不对应任何真实企业、产线或客户。
+
+## 最快上手
+```json
+{ "meta": { "title": "Hello", "author": "示例作者" },
+  "blocks": [
+    { "type": "heading", "level": 1, "text": "第一节" },
+    { "type": "para", "text": "最小示例，支持 `代码` 与 $E=mc^2$。" } ] }
+```
+```bash
+python3 texgen.py hello.json -o out/hello.tex --compile
+```
+
+预期产物：`out/hello.tex`（约 400 字节）+ `out/hello.pdf`（1 页，含标题、段落、行内代码与公式）。只要 `.tex` 就去掉 `--compile`。
+
+首次用 tectonic 编译需联网拉取约 60 MB bundle，之后离线可用；换 TeX Live 或指定引擎见 [docs/engine.md](docs/engine.md)。
 
 ## 安装
 
 ```bash
-# 1) Python 依赖：无。要求 Python >= 3.7
+# Python 依赖：无。要求 Python >= 3.7
 git clone https://github.com/uniwuyuan/json2latex-report.git
 cd json2latex-report
 
-# 2) 准备 LaTeX 引擎（二选一）
-#    A. tectonic：单文件二进制，推荐
-#       macOS/Linux 见 https://github.com/tectonic-typesetting/tectonic
-#       下载后放到 ./bin/tectonic 或加入 PATH
-#    B. TeX Live / MacTeX：确保 xelatex（或 lualatex）在 PATH 中，中文需 ctex 宏包
+# LaTeX 引擎（二选一）
+#   A. tectonic：单文件二进制，推荐；放到 ./bin/tectonic 或加入 PATH
+#   B. TeX Live / MacTeX：确保 xelatex（或 lualatex）在 PATH 中，中文需 ctex 宏包
 ```
 
-## 运行
+引擎探测顺序、tectonic 缓存位置、英文模板等细节见 [docs/engine.md](docs/engine.md)。
+
+## 更多运行方式
 
 ```bash
 # JSON → tex → PDF
@@ -35,24 +49,12 @@ python3 texgen.py demo.json -o out/demo.tex
 python3 texgen.py demo.json -o build/report.tex --engine tectonic
 ```
 
-## LaTeX 引擎说明
-
-脚本按以下顺序自动探测，也可用 `--engine` 显式指定：
-
-1. `./bin/tectonic` —— 随仓库放置的单文件引擎（`bin/` 已在 `.gitignore` 中，需自行下载）
-2. `tectonic` —— PATH 中的 tectonic
-3. `xelatex` / `lualatex` / `pdflatex` —— TeX Live 系
-
-- **tectonic**：首次编译会联网拉取 bundle（约 60 MB），之后缓存在 `~/.cache/Tectonic`，可离线使用；不需要系统安装 TeX 宏包
-- **TeX Live**：中文走 `ctexart` + Fandol 字体，需预装 `ctex` 与中文字体包
-- 英文模板：`--en` 切换为 `article` + `lmodern`，不使用 ctex
-
 ## JSON 结构
 
-```json
-{ "meta": {"title": "标题", "author": "作者", "date": "2026 年 11 月"},
-  "blocks": [ {"type": "heading", "level": 1, "text": "第一章"} ] }
-```
+顶层 `meta` + `blocks`，块类型共 12 种（heading / para / table / code / math / figure …）。
+
+<details>
+<summary>展开完整块类型表</summary>
 
 | type | 关键字段 | 说明 |
 | --- | --- | --- |
@@ -70,12 +72,24 @@ python3 texgen.py demo.json -o build/report.tex --engine tectonic
 
 正文自动转义 `% & # _ $ { } ~ \ ^`；`$...$` 内的 LaTeX 原样保留，公式可直接写。
 
-## Markdown 支持范围
+</details>
 
-`# 标题`、`- / 1.` 列表、`| 表格 |`、```` ``` ```` 代码块、`$$ 公式 $$`、`> 引用`、空行分段。
+完整字段说明见 [docs/json-schema.md](docs/json-schema.md)。
+
+## 高级用法
+
+### Markdown 输入
+
+`# 标题`、`- / 1.` 列表、`| 表格 |`、```` ``` ```` 代码块、`$$ 公式 $$`、`> 引用`、空行分段；
 `---` 包裹的 YAML 头里 `title/author/date` 会填进导言区。
 
-## 批量出稿
+```bash
+python3 texgen.py note.md -o out/note.tex --from md --compile
+```
+
+细节见 [docs/markdown.md](docs/markdown.md)。
+
+### 批量出稿
 
 ```bash
 for f in reports/*.json; do
@@ -90,6 +104,7 @@ texgen.py          生成器（约 400 行，含 Markdown 解析与编译调用�
 demo.json          示例数据（虚构）
 note.md            示例 Markdown（虚构）
 requirements.txt   依赖说明（无第三方依赖，Python >= 3.7）
+docs/              引擎说明、JSON 结构、Markdown 支持
 out/               产物目录（已忽略）
 ```
 
