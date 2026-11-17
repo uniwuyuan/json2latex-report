@@ -1,0 +1,36 @@
+{
+  "meta": {
+    "title": "示例报告：虚构产线视觉检测季度小结",
+    "author": "示例作者（虚构）",
+    "date": "2026 年 11 月"
+  },
+  "blocks": [
+    { "type": "toc" },
+    { "type": "heading", "level": 1, "text": "背景与目标" },
+    { "type": "para", "text": "本示例用于演示 texgen 的排版能力，所有名称与数字均为虚构。假想目标是把 `DEMO-LINE-01` 的漏检率压到 **1.2% 以下**，同时保持单帧耗时不超过 `45 ms`。假设瓶颈来自边缘召回，理论下限由信噪比决定：$\\text{SNR} = \\mu_s / \\sigma_n$。" },
+    { "type": "heading", "level": 2, "text": "三项假想改造" },
+    { "type": "list", "ordered": true, "items": [
+      "把环形光换成**同轴光**，边缘对比度假设提升约 1.5 倍。",
+      "候选框阈值从 `0.40` 降到 `0.25`，由二级分类器兜底。",
+      "训练集补充 1,000 张过曝样本，标签按旧规则复核。"
+    ] },
+    { "type": "heading", "level": 2, "text": "数据与结果（虚构）" },
+    { "type": "table", "caption": "改造前后对比（假想抽检 10,000 帧）",
+      "header": ["指标", "改造前", "改造后", "变化"],
+      "align": "lccc",
+      "rows": [
+        ["漏检率", "3.20%", "1.15%", "-2.05 pt"],
+        ["误检率", "0.55%", "0.72%", "+0.17 pt"],
+        ["单帧耗时", "52 ms", "44 ms", "-8 ms"],
+        ["边缘召回", "85.0%", "93.4%", "+8.4 pt"]
+      ] },
+    { "type": "para", "text": "假想权衡点落在阈值 $t = 0.25$，对应的综合指标为：" },
+    { "type": "math", "text": "F_\\beta(t) = \\frac{(1+\\beta^2)\\,P(t)\\,R(t)}{\\beta^2 P(t) + R(t)}, \\quad \\beta = 2" },
+    { "type": "para", "text": "在该点 $F_2 = 0.912$，仅用于说明公式排版效果。" },
+    { "type": "heading", "level": 1, "text": "复现命令" },
+    { "type": "code", "caption": "生成报告并编译", "text": "python3 texgen.py demo.json -o out/demo.tex --compile\n# 引擎缺省时可用 --engine tectonic" },
+    { "type": "quote", "text": "本文件中的产线名、工位名、指标数值全部为虚构示例，不对应任何真实企业、产线或客户。" },
+    { "type": "hrule" },
+    { "type": "para", "text": "*下一步*：把同样的排版结构套到其它示例数据上，验证表格与公式的兼容性。" }
+  ]
+}

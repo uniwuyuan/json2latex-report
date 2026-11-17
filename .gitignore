@@ -1,0 +1,15 @@
+# 产物
+out/
+*.pdf
+*.aux
+*.log
+*.toc
+*.out.bak
+
+# Python
+__pycache__/
+*.py[cod]
+
+# 本地引擎与密钥
+bin/
+.env

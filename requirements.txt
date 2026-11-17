@@ -1,0 +1,6 @@
+# 无第三方依赖：texgen.py 仅使用 Python 标准库
+# 最低版本：Python 3.7（用到 subprocess.run(capture_output=..., text=...)）
+#
+# 若需要编译 PDF，另需以下任一 LaTeX 引擎（不通过 pip 安装）：
+#   - tectonic（单文件二进制，推荐；放入 bin/tectonic 或加入 PATH）
+#   - TeX Live / MacTeX 的 xelatex 或 lualatex（中文需 ctex 宏包）
